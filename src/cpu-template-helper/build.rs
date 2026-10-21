@@ -22,7 +22,8 @@ struct KernelHeader {
 }
 
 fn main() {
-    if cfg!(target_arch = "x86_64") {
+    let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").expect("Missing target architecture");
+    if target_arch == "x86_64" {
         println!("cargo:rerun-if-changed=src/utils/mock_kernel/main.c");
         let status = std::process::Command::new("gcc")
             .args([
@@ -43,7 +44,7 @@ fn main() {
         if !status.success() {
             panic!("Failed to compile mock kernel");
         }
-    } else if cfg!(target_arch = "aarch64") {
+    } else if target_arch == "aarch64" {
         let header = KernelHeader {
             magic: 0x644D5241,
             ..std::default::Default::default()
